@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+
+<html>
+
+<head>
+	<script type = "text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+
+<body>
+	<script type = "text/javascript">
+ 
+	var canvas_height = canvas_width = 400;  
+	var colors = d3.scale.ordinal()
+				.range(["red","purple","green","blue","orange"]);
+    var topFive = '{"topFive": [  {"name": "Madonna", "income": 125},'+
+								 '{"name": "Lady Gaga", "income": 80},'+
+								 '{"name": "Bon Jovi", "income": 79},'+
+								 '{"name": "Toby Keith", "income": 65},'+
+								 '{"name": "Coldplay", "income": 64}  ]   }';
+								 
+	var others = '{"others": [    {"name": "Bruce Springsteen", "income": 62},'+
+								 '{"name": "Justin Bieber", "income": 58},'+
+								 '{"name": "Taylor Swift", "income": 55},'+
+								 '{"name": "Elton John", "income": 54},'+
+								 '{"name": "Beyonce", "income": 53},'+
+								 '{"name": "Kenny Chesney", "income": 53},'+
+								 '{"name": "Diddy", "income": 50},'+
+								 '{"name": "Paul McCartney", "income": 47},'+
+								 '{"name": "Calvin Harris", "income": 46},'+
+								 '{"name": "Jennifer Lopez", "income": 45},'+
+								 '{"name": "Roger Waters", "income": 44},'+
+								 '{"name": "Muse", "income": 43},'+
+								 '{"name": "Rihanna", "income": 43},'+
+								 '{"name": "Jay Z", "income": 42},'+
+								 '{"name": "One Direction", "income": 42},'+
+								 '{"name": "Dr. Dre", "income": 40},'+
+								 '{"name": "Red Hot Chili Peppers", "income": 40},'+
+								 '{"name": "Rolling Stones", "income": 39},'+
+								 '{"name": "Katy Perry", "income": 39},'+
+								 '{"name": "Tim McGraw", "income": 33}  ]   }';
+    var arr = JSON.parse(topFive);
+	var arr2 = JSON.parse(others); 
+	
+	//add a header using D3 and adjust body
+	d3.select("body")
+				.style("color", "blue")
+				.style("height", "1200px")
+				.style("background-color", "#C0C0C0")
+				.append("h1")
+				.text("Top Paid Music Artists of 2013")
+				.style("margin-left", "140px"); 
+	
+	//create do-nut chart for top 5
+	var canvas1 = d3.select("body") 
+				.append("svg")
+				.attr("width", canvas_width)
+				.attr("height", canvas_height)
+				.style("margin", "20px")
+				.style("margin-right", "0px")
+				.style("border-width", "1px")
+				.style("border-color", "blue")
+				.style("border-style", "solid") 
+				.style("background-color", "#18308A")
+				.style("float", "left"); 
+	var donutGroup = canvas1.append("g").attr("transform", "translate(200, 200)");
+	var arc = d3.svg.arc()
+				.innerRadius(100)
+				.outerRadius(175); 
+	var pie = d3.layout.pie()
+				.value(function(d) { return d.income; });
+	var arcs = donutGroup.selectAll(".arc")
+				.data(pie(arr.topFive))
+				.enter()
+					.append("g")
+					.attr("class", "arc");
+	arcs.append("path")
+				.attr("d", arc)
+				.attr("fill", function(d) {return colors(d.data.income);} );
+	arcs.append("text")
+				.attr("transform", function(d){return "translate(" + arc.centroid(d) + ")"})
+				.attr("text-anchor", "middle")
+				.attr("fill", "#97EEF3") 
+				.text(function(d){return d.data.name + " $" + d.data.income + "m";});
+	 
+	//create list of the other 20 musicians
+	canvas_height = 1005;	
+	canvas_width = 250;  
+	var canvas2 = d3.select("body") 
+				.append("svg")
+				.attr("width", canvas_width)
+				.attr("height", canvas_height)
+				.style("position", "absolute")
+				.style("left", "435px") 
+				.style("background-color", "#18308A") 
+				.style("margin-top", "20px")
+				.style("border-width", "1px")
+				.style("border-color", "blue")
+				.style("border-style", "solid")
+				.append("g"); 
+	var backBars = canvas2.append("g").attr("class", "backBars");
+    backBars.selectAll("rect")
+			.data(arr2.others)
+			.enter().append("rect")
+				.attr("width", 250)
+				.attr("height", 5)
+				.attr("class", "backBars")
+				.attr("x", 0)
+				.attr("y",function(d, i) { return i*50 + 50; })
+				.attr("fill", "black");  
+	var frontBars = canvas2.append("g").attr("class", "frontBars");			
+	frontBars.selectAll("rect")
+			.data(arr2.others)
+			.enter().append("rect")
+				.attr("width", 0)
+				.attr("height", 5)
+				.attr("class", "frontBars")
+				.attr("x", 0)
+				.attr("y",function(d, i) { return i*50 + 50; })
+				.attr("fill", "white"); 
+	frontBars.selectAll("text")
+			.data(arr2.others)
+			.enter().append("text") 
+				.attr("fill", "#97EEF3") 
+				.attr("x", 0)
+				.attr("y",function(d, i) { return i*50 + 45; })
+				.text(function (d, i) {return (i + 6) + ") "+ d.name + " $" + d.income + " Million";});
+				
+	//add cool little animation to frontBars			
+	frontBars.selectAll("rect").transition()
+				.duration(2000)
+				.attr("width", function(d) { return d.income/125*400; });
+	</script>
+	
+	<div id="aboutBox" style="position:absolute;left:40px;top:500px">
+		<h3 style="margin-bottom:-20px;">About this program</h3>
+		<p> 
+		   This Program is based on data pulled from <a href="http://forbes.com">Forbes.com</a><br />
+		   that shows the Top Paid Music Artists of the World in 2013. <br />
+		   The do-nut chart reflects the top 5 ranked and the list <br />
+		   to the right shows 6th place to 25th place.<br />
+		   Implemented using the JavaScript D3 library as <br />
+		   well as XHTML, & CSS. <br />
+		</p> 
+	</div>
+	
+	<div id="footer" style="position:absolute;top:1200px;left:175px;">
+		<p>William Olson | willko747@yahoo.com | 12/30/2013</p>
+	</div>
+
+</body>
+
+</html>
