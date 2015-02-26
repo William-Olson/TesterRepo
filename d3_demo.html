@@ -1,493 +1,521 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html>
 
 <head>
-	<script type = "text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+  <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 </head>
 
 <body>
-	<script type = "text/javascript">
-	
-	var hoverColor = "dodgerblue", clickColor = "midnightblue", 
-		clickTextColor = "azure", regTextColor = "#97EEF3", 
-		regBackColor = "#18308A"; 
-	var canvas_height = canvas_width = 400, clicked = 0;  
-	var colors = d3.scale.ordinal()
-				.range(["red","purple","green","blue","orange"]);
-				
-	var topSongs = '{"topSongs": [{"song1": "Like a Prayer", "song2": "Hung Up", "song3": "Like a Virgin"},'+
-								 '{"song1": "Applause", "song2": "Bad Romance", "song3": "Poker Face"},'+
-								 '{"song1": "Livin\' on a Prayer", "song2": "You Give Love a Bad Name", "song3": "It\'s my life"},'+
-								 '{"song1": "Red Solo Cup", "song2": "Beer For My Horses", "song3": "I Love This Bar"},'+
-								 '{"song1": "Paradise", "song2": "The Scientist", "song3": "Viva la Vida"},' + 
-								 '{"song1": "Born to Run", "song2": "Dancing in the Dark", "song3": "Born in the U.S.A."},'+
-								 '{"song1": "Boyfriend", "song2": "Beauty and a Beat", "song3": "As Long as You Love Me"},'+
-								 '{"song1": "We Are Never Ever Getting Back Together", "song2": "22", "song3": "I Knew You Were Trouble"},'+
-								 '{"song1": "Your Song", "song2": "Tiny Dancer", "song3": "Goodbye Yellow Brick Road"},'+
-								 '{"song1": "Halo", "song2": "Sweet Dreams", "song3": "Love on Top"},'+
-								 '{"song1": "Come Over", "song2": "Pirate Flag", "song3": "Somewhere With You"},'+
-								 '{"song1": "Last Night", "song2": "Tell Me", "song3": "Coming Home"},'+
-								 '{"song1": "New", "song2": "Queenie Eye", "song3": "Save Us"},'+
-								 '{"song1": "I Need Your Love", "song2": "Sweet Nothing", "song3": "Thinking About You"},'+
-								 '{"song1": "Live It Up", "song2": "Waiting for Tonight", "song3": "Dance Again"},'+
-								 '{"song1": "Amused to Death", "song2": "The Bravery Of Being Out Of Range", "song3": "The Ballad of Bill Hubbard"},'+
-								 '{"song1": "Madness", "song2": "Supermassive Black Hole", "song3": "Starlight"},'+
-								 '{"song1": "Diamonds", "song2": "Where Have You Been", "song3": "Only Girl (In the World)"},'+
-								 '{"song1": "Holy Grail", "song2": "Tom Ford", "song3": "Picasso Baby"},'+
-								 '{"song1": "Best Song Ever", "song2": "Story of My Life", "song3": "What Makes You Beautiful"},'+
-								 '{"song1": "The Next Episode", "song2": "Still D.R.E", "song3": "Forgot About Dre"},'+
-								 '{"song1": "Californication", "song2": "Scar Tissue", "song3": "Otherside"},'+
-								 '{"song1": "Paint It Black", "song2": "Sympathy For The Devil", "song3": "Angie"},'+
-								 '{"song1": "Firework", "song2": "Teenage Dream", "song3": "Hot \'N Cold"},'+
-								 '{"song1": "Highway Don\'t Care", "song2": "Southern Girl", "song3": "Just to see You smile"}  ]   }';
-								 
-	var links = '{"links": [{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-1-madonna-125-million/", ' + 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Madonna"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-2-lady-gaga-80-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Lady%20Gaga"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-3-bon-jovi-79-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Bon%20Jovi"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-4-toby-keith-65-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Toby%20Keith"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-5-coldplay-64-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Coldplay"},' + 
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-6-bruce-springsteen-62-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Bruce%20Springsteen"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-7-justin-bieber-58-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Justin%20Bieber"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-8-taylor-swift-55-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Taylor%20Swift"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-9-elton-john-54-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Elton%20John"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-10-beyonc%C3%A9-53-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Beyonce"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-10-kenny-chesney-53-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Kenny%20Chesney"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-12-diddy-50-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Diddy"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-13-paul-mccartney-47-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Paul%20Mccartney"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-14-calvin-harris-46-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Calvin%20Harris"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-15-jennifer-lopez-45-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Jennifer%20Lopez"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-16-roger-waters-44-million/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Roger%20Waters"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-17-muse-43-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Muse"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-17-rihanna-43-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Rihanna"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-19-jay-z-42-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Jay%20Z"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-20-one-direction-42-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=One%20Direction"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-21-dr-dre-40-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Dr%20Dre"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-21-red-hot-chili-peppers-40-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Red%20Hot%20Chili%20Peppers"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-23-rolling-stones-39-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Rolling%20Stones"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-23-katy-perry-39-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Katie%20Perry"},'+
-								 '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-25-tim-mcgraw-33-million-tie/", '+ 
-								 '"url2": "http://www.top50songs.org/artist.php?artist=Tim%20Mcgraw"}  ]   }';
-								  
-    var topFive = '{"topFive": [  {"name": "Madonna", "income": 125},'+
-								 '{"name": "Lady Gaga", "income": 80},'+
-								 '{"name": "Bon Jovi", "income": 79},'+
-								 '{"name": "Toby Keith", "income": 65},'+
-								 '{"name": "Coldplay", "income": 64}  ]   }';
-								 
-	var others = '{"others": [    {"name": "Bruce Springsteen", "income": 62},'+
-								 '{"name": "Justin Bieber", "income": 58},'+
-								 '{"name": "Taylor Swift", "income": 55},'+
-								 '{"name": "Elton John", "income": 54},'+
-								 '{"name": "Beyonce", "income": 53},'+
-								 '{"name": "Kenny Chesney", "income": 53},'+
-								 '{"name": "Diddy", "income": 50},'+
-								 '{"name": "Paul McCartney", "income": 47},'+
-								 '{"name": "Calvin Harris", "income": 46},'+
-								 '{"name": "Jennifer Lopez", "income": 45},'+
-								 '{"name": "Roger Waters", "income": 44},'+
-								 '{"name": "Muse", "income": 43},'+
-								 '{"name": "Rihanna", "income": 43},'+
-								 '{"name": "Jay Z", "income": 42},'+
-								 '{"name": "One Direction", "income": 42},'+
-								 '{"name": "Dr. Dre", "income": 40},'+
-								 '{"name": "Red Hot Chili Peppers", "income": 40},'+
-								 '{"name": "Rolling Stones", "income": 39},'+
-								 '{"name": "Katy Perry", "income": 39},'+
-								 '{"name": "Tim McGraw", "income": 33}  ]   }';
-    var arr = JSON.parse(topFive);
-	var arr2 = JSON.parse(others); 
-	var arr3 = JSON.parse(topSongs);
-	var arr4 = JSON.parse(links);
-	
-	//add some ranks to data
-	for (var i = 1, end = arr.topFive.length; i <= end; i++) {
-		arr.topFive[i - 1].rank = i; 
-	}
-	for (var i = 6, end = arr2.others.length + 5; i <= end; i++) {
-		arr2.others[i - 6].rank = i; 
-	}
-	
-	//add a header using D3 and adjust body
-	d3.select("body")
-				.style("color", "blue")
-				.style("height", "1200px")
-				.style("background-color", "#C0C0C0")
-				.append("h1")
-				.text("Top Paid Music Artists of 2013")
-				.style("margin-left", "140px"); 
-	var songsBox = d3.select("body")
-				.append("div")
-				.attr("class", "songs")
-				.style("position", "absolute")
-				.style("left", "692px")
-				.style("top", "100px")
-				.style("border-width", "1px")
-				.style("border-color", "blue")
-				.style("border-style", "solid")
-				.style("background-color", regBackColor)
-				.append("p")
-				.style("margin", "15px")
-				.style("color", regTextColor)
-				.text("Click an artist to view top songs")
-				.style("font-size", "20px"); 
-	//create do-nut chart for top 5
-	var canvas1 = d3.select("body") 
-				.append("svg")
-				.attr("width", canvas_width)
-				.attr("height", canvas_height)
-				.style("margin", "20px")
-				.style("margin-right", "0px")
-				.style("border-width", "1px")
-				.style("border-color", "blue")
-				.style("border-style", "solid") 
-				.style("background-color", regBackColor)
-				.style("float", "left"); 
-	var donutGroup = canvas1.append("g").attr("transform", "translate(200, 200)");
-	var arc = d3.svg.arc()
-				.innerRadius(100)
-				.outerRadius(175); 
-	var pie = d3.layout.pie()
-				.value(function(d) { return d.income; });
-	var arcs = donutGroup.selectAll(".arc")
-				.data(pie(arr.topFive))
-				.enter()
-					.append("g")
-					.attr("class", "arc");
-	arcs.append("path")
-				.attr("d", arc)
-				.attr("fill", function(d) {return colors(d.data.income);} );
-	arcs.append("text")
-				.attr("transform", function(d){return "translate(" + arc.centroid(d) + ")"})
-				.attr("text-anchor", "middle")
-				.attr("fill", regTextColor) 
-				.attr("cursor", "default") 
-				.text(function(d){return d.data.name + " $" + d.data.income + "m";});
-	arcs.selectAll("path")
-				.on("mouseout", function(d,i) { 
-					if(d.data.rank != clicked){
-						d3.select(this).style("opacity", "1.0"); 
-					}
-					arcs.selectAll("text").style("opacity", "1.0");
-				})
-				.on("mouseover", function(d,i) { 
-					var currentArc = d.data.rank;
-					if(d.data.rank != clicked){
-						d3.select(this).style("opacity", "0.5");  
-						arcs.selectAll("text")
-							.style("opacity", function(d){
-								if(d.data.rank == currentArc){
-									return "0.5";
-								}else{
-									return "1.0";
-								}
-							});
-					}
-				})
-				.on("click", function(d) { 
-					clicked = d.data.rank;
-					arcs.selectAll("path")
-						.style("opacity", "1.0")
-						.style("fill", function(d){
-							if(d.data.rank == clicked){
-								return clickColor;
-							}else{
-								return colors(d.data.income);
-							}
-						});
-					arcs.selectAll("text")
-						.style("opacity", "1.0")
-						.style("fill", function(d){
-							if(clicked == d.data.rank){
-								return clickTextColor;
-							}else{
-								return regTextColor
-							}
-						});
-					tiles.selectAll("rect").style("fill", regBackColor);
-					tiles.selectAll("text").style("fill", regTextColor);
-					showSongs(d.data.name, d.data.rank); 
-				});
-	arcs.selectAll("text")
-				.on("mouseout", function(d) { 
-					var currentArc = d.data.rank;
-					d3.select(this).style("opacity", "1.0"); 
-					arcs.selectAll("path")
-						.style("opacity", "1.0"); 
-				})
-				.on("mouseover", function(d) {  
-					var currentArc = d.data.rank;
-					if(d.data.rank != clicked){
-						d3.select(this).style("opacity", "0.5"); 
-						arcs.selectAll("path")
-							.style("opacity", function(d){  
-								if(d.data.rank == currentArc){ 
-									return "0.5";
-								}else{
-									return "1.0";
-								}
-							});
-					}
-				})
-				.on("click", function(d) { 
-					clicked = d.data.rank; 
-					arcs.selectAll("text")
-						.style("opacity", "1.0")
-						.style("fill", function(d){
-							if(d.data.rank == clicked){
-								return clickTextColor;
-							}else{
-								return regTextColor;
-							}
-						});
-					arcs.selectAll("path")
-						.style("opacity", "1.0")
-						.style("fill", function(d){
-							if(d.data.rank == clicked){
-								return clickColor;
-							}else{
-								return colors(d.data.income);
-							}
-						});
-						tiles.selectAll("rect").style("fill", regBackColor);
-						tiles.selectAll("text").style("fill", regTextColor);
-						showSongs(d.data.name, d.data.rank);  
-				});
-	//create list of the other 20 musicians
-	canvas_height = 1005;	
-	canvas_width = 250;  
-	var canvas2 = d3.select("body") 
-				.append("svg")
-				.attr("width", canvas_width)
-				.attr("height", canvas_height)
-				.style("position", "absolute")
-				.style("left", "435px") 
-				.style("background-color", regBackColor) 
-				.style("margin-top", "20px")
-				.style("border-width", "1px")
-				.style("border-color", "blue")
-				.style("border-style", "solid")
-				.append("g"); 
-	var tiles = canvas2.append("g").attr("class", "tiles");
-    tiles.selectAll("rect")
-			.data(arr2.others)
-			.enter().append("rect")
-				.attr("width", 250)
-				.attr("height", 50) 
-				.attr("x", 0)
-				.attr("y",function(d, i) { return i*50; })
-				.attr("fill", regBackColor)
-				.on("mouseover", function(d) { 
-					if(clicked != d.rank){
-						d3.select(this).style("fill", hoverColor);  
-					}
-				})
-				.on("mouseout", function(d) { 
-					if(clicked != d.rank){
-						d3.select(this).style("fill", regBackColor);  
-					}
-				})
-				.on("click", function(d) { 
-					clicked = d.rank; 
-					tiles.selectAll("rect")
-						.style("fill", function(d){
-							if(d.rank == clicked){
-								return clickColor;  
-							}else{
-								return regBackColor;
-							} 
-					}); 
-					tiles.selectAll("text")
-						.style("fill", function(d){
-							if(d.rank == clicked){
-								return clickTextColor;
-							}else{
-								return regTextColor;
-							}
-						}); 
-					arcs.selectAll("text")
-						.style("fill", regTextColor);
-					arcs.selectAll("path")
-						.style("fill", function(d){return colors(d.data.income);}); 
-					showSongs(d.name, d.rank); 
-				}); 
-	tiles.selectAll("text")
-			.data(arr2.others)
-			.enter().append("text") 
-				.attr("fill", regTextColor)  
-				.style("cursor", "default")
-				.attr("x", 0)
-				.attr("y",function(d, i) { return i*50 + 45; })
-				.text(function (d) {return d.rank + ") "+ d.name + " $" + d.income + " Million";})
-				.on("mouseover", function(d) { 
-						var currentTile = d.rank;
-						tiles.selectAll("rect")
-							.style("fill", function(d){
-								if(d.rank != clicked){
-									if(d.rank == currentTile){
-										return hoverColor;
-									}else{
-										return regBackColor;
-									}
-								}else{
-									return clickColor;
-								}
-							}) 
-				})
-				.on("mouseout", function(d){ 
-						tiles.selectAll("rect").style("fill", function(d){
-							if(d.rank != clicked){
-								return regBackColor;
-							}else{
-								return clickColor;
-							}
-						});   
-				})
-				.on("click", function(d) { 
-					clicked = d.rank; 
-					tiles.selectAll("rect")
-					.style("fill", function(d){
-						if(d.rank == clicked){
-							return clickColor;
-						}else{
-							return regBackColor;
-						}
-					});
-					tiles.selectAll("text")
-						.style("fill", function(d){
-							if(d.rank == clicked){
-								return clickTextColor;
-							}else{
-								return regTextColor;
-							}
-						}); 
-						arcs.selectAll("text").style("fill", regTextColor);
-						arcs.selectAll("path")
-							.style("fill", function(d){return colors(d.data.income);});
-						showSongs(d.name, d.rank);  
-				});
+  <script type="text/javascript">
+    var hoverColor = "dodgerblue"
+      , clickColor = "midnightblue"
+      , clickTextColor = "azure"
+      , regTextColor = "#97EEF3"
+      , regBackColor = "#18308A";
+    var canvas_height = canvas_width = 400,
+      clicked = 0;
+    var colors = d3.scale.ordinal()
+      .range(["red", "purple", "green", "blue", "orange"]);
 
-	var backBars = canvas2.append("g").attr("class", "backBars");
+    var topSongs = '{"topSongs": [{"song1": "Like a Prayer", "song2": "Hung Up", "song3": "Like a Virgin"},' +
+                   '{"song1": "Applause", "song2": "Bad Romance", "song3": "Poker Face"},' +
+                   '{"song1": "Livin\' on a Prayer", "song2": "You Give Love a Bad Name", "song3": "It\'s my life"},' +
+                   '{"song1": "Red Solo Cup", "song2": "Beer For My Horses", "song3": "I Love This Bar"},' +
+                   '{"song1": "Paradise", "song2": "The Scientist", "song3": "Viva la Vida"},' +
+                   '{"song1": "Born to Run", "song2": "Dancing in the Dark", "song3": "Born in the U.S.A."},' +
+                   '{"song1": "Boyfriend", "song2": "Beauty and a Beat", "song3": "As Long as You Love Me"},' +
+                   '{"song1": "We Are Never Ever Getting Back Together", "song2": "22", "song3": "I Knew You Were Trouble"},' +
+                   '{"song1": "Your Song", "song2": "Tiny Dancer", "song3": "Goodbye Yellow Brick Road"},' +
+                   '{"song1": "Halo", "song2": "Sweet Dreams", "song3": "Love on Top"},' +
+                   '{"song1": "Come Over", "song2": "Pirate Flag", "song3": "Somewhere With You"},' +
+                   '{"song1": "Last Night", "song2": "Tell Me", "song3": "Coming Home"},' +
+                   '{"song1": "New", "song2": "Queenie Eye", "song3": "Save Us"},' +
+                   '{"song1": "I Need Your Love", "song2": "Sweet Nothing", "song3": "Thinking About You"},' +
+                   '{"song1": "Live It Up", "song2": "Waiting for Tonight", "song3": "Dance Again"},' +
+                   '{"song1": "Amused to Death", "song2": "The Bravery Of Being Out Of Range", "song3": "The Ballad of Bill Hubbard"},' +
+                   '{"song1": "Madness", "song2": "Supermassive Black Hole", "song3": "Starlight"},' +
+                   '{"song1": "Diamonds", "song2": "Where Have You Been", "song3": "Only Girl (In the World)"},' +
+                   '{"song1": "Holy Grail", "song2": "Tom Ford", "song3": "Picasso Baby"},' +
+                   '{"song1": "Best Song Ever", "song2": "Story of My Life", "song3": "What Makes You Beautiful"},' +
+                   '{"song1": "The Next Episode", "song2": "Still D.R.E", "song3": "Forgot About Dre"},' +
+                   '{"song1": "Californication", "song2": "Scar Tissue", "song3": "Otherside"},' +
+                   '{"song1": "Paint It Black", "song2": "Sympathy For The Devil", "song3": "Angie"},' +
+                   '{"song1": "Firework", "song2": "Teenage Dream", "song3": "Hot \'N Cold"},' +
+                   '{"song1": "Highway Don\'t Care", "song2": "Southern Girl", "song3": "Just to see You smile"}  ]   }';
+
+    var links = '{"links": [{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-1-madonna-125-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Madonna"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-2-lady-gaga-80-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Lady%20Gaga"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-3-bon-jovi-79-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Bon%20Jovi"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-4-toby-keith-65-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Toby%20Keith"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-5-coldplay-64-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Coldplay"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-6-bruce-springsteen-62-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Bruce%20Springsteen"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-7-justin-bieber-58-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Justin%20Bieber"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-8-taylor-swift-55-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Taylor%20Swift"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-9-elton-john-54-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Elton%20John"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-10-beyonc%C3%A9-53-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Beyonce"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-10-kenny-chesney-53-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Kenny%20Chesney"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-12-diddy-50-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Diddy"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-13-paul-mccartney-47-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Paul%20Mccartney"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-14-calvin-harris-46-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Calvin%20Harris"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-15-jennifer-lopez-45-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Jennifer%20Lopez"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-16-roger-waters-44-million/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Roger%20Waters"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-17-muse-43-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Muse"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-17-rihanna-43-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Rihanna"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-19-jay-z-42-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Jay%20Z"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-20-one-direction-42-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=One%20Direction"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-21-dr-dre-40-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Dr%20Dre"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-21-red-hot-chili-peppers-40-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Red%20Hot%20Chili%20Peppers"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-23-rolling-stones-39-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Rolling%20Stones"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-23-katy-perry-39-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Katie%20Perry"},' +
+                '{"url1": "http://www.forbes.com/pictures/eeel45eghfe/no-25-tim-mcgraw-33-million-tie/", ' +
+                '"url2": "http://www.top50songs.org/artist.php?artist=Tim%20Mcgraw"}  ]   }';
+
+    var topFive = '{"topFive": [{"name": "Madonna", "income": 125},' +
+                  '{"name": "Lady Gaga", "income": 80},' +
+                  '{"name": "Bon Jovi", "income": 79},' +
+                  '{"name": "Toby Keith", "income": 65},' +
+                  '{"name": "Coldplay", "income": 64}  ]   }';
+
+    var others = '{"others": [{"name": "Bruce Springsteen", "income": 62},' +
+                 '{"name": "Justin Bieber", "income": 58},' +
+                 '{"name": "Taylor Swift", "income": 55},' +
+                 '{"name": "Elton John", "income": 54},' +
+                 '{"name": "Beyonce", "income": 53},' +
+                 '{"name": "Kenny Chesney", "income": 53},' +
+                 '{"name": "Diddy", "income": 50},' +
+                 '{"name": "Paul McCartney", "income": 47},' +
+                 '{"name": "Calvin Harris", "income": 46},' +
+                 '{"name": "Jennifer Lopez", "income": 45},' +
+                 '{"name": "Roger Waters", "income": 44},' +
+                 '{"name": "Muse", "income": 43},' +
+                 '{"name": "Rihanna", "income": 43},' +
+                 '{"name": "Jay Z", "income": 42},' +
+                 '{"name": "One Direction", "income": 42},' +
+                 '{"name": "Dr. Dre", "income": 40},' +
+                 '{"name": "Red Hot Chili Peppers", "income": 40},' +
+                 '{"name": "Rolling Stones", "income": 39},' +
+                 '{"name": "Katy Perry", "income": 39},' +
+                 '{"name": "Tim McGraw", "income": 33}  ]   }';
+    var arr = JSON.parse(topFive);
+    var arr2 = JSON.parse(others);
+    var arr3 = JSON.parse(topSongs);
+    var arr4 = JSON.parse(links);
+
+    //add some ranks to data
+    for (var i = 1, end = arr.topFive.length; i <= end; i++) {
+      arr.topFive[i - 1].rank = i;
+    }
+    for (var i = 6, end = arr2.others.length + 5; i <= end; i++) {
+      arr2.others[i - 6].rank = i;
+    }
+
+    //add a header using D3 and adjust body
+    d3.select("body")
+      .style("color", "blue")
+      .style("height", "1200px")
+      .style("background-color", "#C0C0C0")
+      .append("h1")
+        .text("Top Paid Music Artists of 2013")
+        .style("margin-left", "140px");
+    var songsBox = d3.select("body")
+      .append("div")
+        .attr("class", "songs")
+        .style("position", "absolute")
+        .style("left", "692px")
+        .style("top", "100px")
+        .style("border-width", "1px")
+        .style("border-color", "blue")
+        .style("border-style", "solid")
+        .style("background-color", regBackColor)
+        .append("p")
+          .style("margin", "15px")
+          .style("color", regTextColor)
+          .text("Click an artist to view top songs")
+          .style("font-size", "20px");
+    //create do-nut chart for top 5
+    var canvas1 = d3.select("body")
+      .append("svg")
+        .attr("width", canvas_width)
+        .attr("height", canvas_height)
+        .style("margin", "20px")
+        .style("margin-right", "0px")
+        .style("border-width", "1px")
+        .style("border-color", "blue")
+        .style("border-style", "solid")
+        .style("background-color", regBackColor)
+        .style("float", "left");
+    var donutGroup = canvas1.append("g").attr("transform", "translate(200, 200)");
+    var arc = d3.svg.arc()
+      .innerRadius(100)
+      .outerRadius(175);
+    var pie = d3.layout.pie()
+      .value(function(d) {
+        return d.income;
+      });
+    var arcs = donutGroup.selectAll(".arc")
+      .data(pie(arr.topFive))
+      .enter()
+      .append("g")
+        .attr("class", "arc");
+    arcs.append("path")
+      .attr("d", arc)
+      .attr("fill", function(d) {
+        return colors(d.data.income);
+      });
+    arcs.append("text")
+      .attr("transform", function(d) {
+        return "translate(" + arc.centroid(d) + ")"
+      })
+      .attr("text-anchor", "middle")
+      .attr("fill", regTextColor)
+      .attr("cursor", "default")
+      .text(function(d) {
+        return d.data.name + " $" + d.data.income + "m";
+      });
+    arcs.selectAll("path")
+      .on("mouseout", function(d, i) {
+        if (d.data.rank != clicked) {
+          d3.select(this).style("opacity", "1.0");
+        }
+        arcs.selectAll("text").style("opacity", "1.0");
+      })
+      .on("mouseover", function(d, i) {
+        var currentArc = d.data.rank;
+        if (d.data.rank != clicked) {
+          d3.select(this).style("opacity", "0.5");
+          arcs.selectAll("text")
+            .style("opacity", function(d) {
+              if (d.data.rank == currentArc) {
+                return "0.5";
+              } else {
+                return "1.0";
+              }
+            });
+        }
+      })
+      .on("click", function(d) {
+        clicked = d.data.rank;
+        arcs.selectAll("path")
+          .style("opacity", "1.0")
+          .style("fill", function(d) {
+            if (d.data.rank == clicked) {
+              return clickColor;
+            } else {
+              return colors(d.data.income);
+            }
+          });
+        arcs.selectAll("text")
+          .style("opacity", "1.0")
+          .style("fill", function(d) {
+            if (clicked == d.data.rank) {
+              return clickTextColor;
+            } else {
+              return regTextColor
+            }
+          });
+        tiles.selectAll("rect").style("fill", regBackColor);
+        tiles.selectAll("text").style("fill", regTextColor);
+        showSongs(d.data.name, d.data.rank);
+      });
+    arcs.selectAll("text")
+      .on("mouseout", function(d) {
+        var currentArc = d.data.rank;
+        d3.select(this).style("opacity", "1.0");
+        arcs.selectAll("path")
+          .style("opacity", "1.0");
+      })
+      .on("mouseover", function(d) {
+        var currentArc = d.data.rank;
+        if (d.data.rank != clicked) {
+          d3.select(this).style("opacity", "0.5");
+          arcs.selectAll("path")
+            .style("opacity", function(d) {
+              if (d.data.rank == currentArc) {
+                return "0.5";
+              } else {
+                return "1.0";
+              }
+            });
+        }
+      })
+      .on("click", function(d) {
+        clicked = d.data.rank;
+        arcs.selectAll("text")
+          .style("opacity", "1.0")
+          .style("fill", function(d) {
+            if (d.data.rank == clicked) {
+              return clickTextColor;
+            } else {
+              return regTextColor;
+            }
+          });
+        arcs.selectAll("path")
+          .style("opacity", "1.0")
+          .style("fill", function(d) {
+            if (d.data.rank == clicked) {
+              return clickColor;
+            } else {
+              return colors(d.data.income);
+            }
+          });
+        tiles.selectAll("rect").style("fill", regBackColor);
+        tiles.selectAll("text").style("fill", regTextColor);
+        showSongs(d.data.name, d.data.rank);
+      });
+
+    //create list of the other 20 musicians
+    canvas_height = 1005;
+    canvas_width = 250;
+    var canvas2 = d3.select("body")
+      .append("svg")
+      .attr("width", canvas_width)
+      .attr("height", canvas_height)
+      .style("position", "absolute")
+      .style("left", "435px")
+      .style("background-color", regBackColor)
+      .style("margin-top", "20px")
+      .style("border-width", "1px")
+      .style("border-color", "blue")
+      .style("border-style", "solid")
+      .append("g");
+    var tiles = canvas2.append("g").attr("class", "tiles");
+    tiles.selectAll("rect")
+      .data(arr2.others)
+      .enter().append("rect")
+      .attr("width", 250)
+      .attr("height", 50)
+      .attr("x", 0)
+      .attr("y", function(d, i) {
+        return i * 50;
+      })
+      .attr("fill", regBackColor)
+      .on("mouseover", function(d) {
+        if (clicked != d.rank) {
+          d3.select(this).style("fill", hoverColor);
+        }
+      })
+      .on("mouseout", function(d) {
+        if (clicked != d.rank) {
+          d3.select(this).style("fill", regBackColor);
+        }
+      })
+      .on("click", function(d) {
+        clicked = d.rank;
+        tiles.selectAll("rect")
+          .style("fill", function(d) {
+            if (d.rank == clicked) {
+              return clickColor;
+            } else {
+              return regBackColor;
+            }
+          });
+        tiles.selectAll("text")
+          .style("fill", function(d) {
+            if (d.rank == clicked) {
+              return clickTextColor;
+            } else {
+              return regTextColor;
+            }
+          });
+        arcs.selectAll("text")
+          .style("fill", regTextColor);
+        arcs.selectAll("path")
+          .style("fill", function(d) {
+            return colors(d.data.income);
+          });
+        showSongs(d.name, d.rank);
+      });
+    tiles.selectAll("text")
+      .data(arr2.others)
+      .enter().append("text")
+      .attr("fill", regTextColor)
+      .style("cursor", "default")
+      .attr("x", 0)
+      .attr("y", function(d, i) {
+        return i * 50 + 45;
+      })
+      .text(function(d) {
+        return d.rank + ") " + d.name + " $" + d.income + " Million";
+      })
+      .on("mouseover", function(d) {
+        var currentTile = d.rank;
+        tiles.selectAll("rect")
+          .style("fill", function(d) {
+            if (d.rank != clicked) {
+              if (d.rank == currentTile) {
+                return hoverColor;
+              } else {
+                return regBackColor;
+              }
+            } else {
+              return clickColor;
+            }
+          });
+      })
+      .on("mouseout", function(d) {
+        tiles.selectAll("rect").style("fill", function(d) {
+          if (d.rank != clicked) {
+            return regBackColor;
+          } else {
+            return clickColor;
+          }
+        });
+      })
+      .on("click", function(d) {
+        clicked = d.rank;
+        tiles.selectAll("rect")
+          .style("fill", function(d) {
+            if (d.rank == clicked) {
+              return clickColor;
+            } else {
+              return regBackColor;
+            }
+          });
+        tiles.selectAll("text")
+          .style("fill", function(d) {
+            if (d.rank == clicked) {
+              return clickTextColor;
+            } else {
+              return regTextColor;
+            }
+          });
+        arcs.selectAll("text").style("fill", regTextColor);
+        arcs.selectAll("path")
+          .style("fill", function(d) {
+            return colors(d.data.income);
+          });
+        showSongs(d.name, d.rank);
+      });
+
+    var backBars = canvas2.append("g").attr("class", "backBars");
     backBars.selectAll("rect")
-			.data(arr2.others)
-			.enter().append("rect")
-				.attr("width", 250)
-				.attr("height", 5)
-				.attr("class", "backBars")
-				.attr("x", 0)
-				.attr("y",function(d, i) { return i*50 + 50; })
-				.attr("fill", "black");  
-	var frontBars = canvas2.append("g").attr("class", "frontBars");			
-	frontBars.selectAll("rect")
-			.data(arr2.others)
-			.enter().append("rect")
-				.attr("width", 0)
-				.attr("height", 5)
-				.attr("class", "frontBars")
-				.attr("x", 0)
-				.attr("y",function(d, i) { return i*50 + 50; })
-				.attr("fill", "white");  
-				
-	//add cool little animation to frontBars			
-	frontBars.selectAll("rect").transition()
-				.duration(2000)
-				.attr("width", function(d) { return d.income/125*400; });
-				
-	// showSongs: takes in an artists' name (string),
-	// and rank (int) & displays their songs			
-	function showSongs(name, rank){
-		if(rank <= 5){
-			d3.select(".songs")
-				.transition()
-				.duration(500)
-				.style("top", "100px");
-		}else{
-			var offset = 100 + (rank - 6)*50;
-			d3.select(".songs")
-				.transition()
-				.duration(500)
-				.style("top", "" + offset + "px");
-		} 	
-		songsBox.text("Top Songs by ")
-				.append("a")
-				.attr("href", arr4.links[rank - 1].url1)
-				.style("color", regTextColor)
-				.text(name); 
-		songsBox.selectAll("ul").remove();
-		songsBox.selectAll("li").remove();
-		var hits = songsBox.append("ul")
-				.style("margin-left", "-10px")
-				.style("margin-top", "0px");
-		for (var song = 1; song <= 3; song++) {
-			hits.append("li")
-				.style("font-style", "italic") 
-				.style("font-size", "18px")
-				.style("color", clickTextColor)
-				.text(function(d){ 
-					switch(song)
-					{
-						case 1:
-							return arr3.topSongs[rank - 1].song1;
-						case 2:
-							return arr3.topSongs[rank - 1].song2;
-						default:
-							return arr3.topSongs[rank - 1].song3;
-					}
-				}); 
-		}
-		hits.append("li")
-			.style("font-style", "italic")
-			.style("color", clickTextColor)
-			.append("a")
-			.style("color", clickTextColor)
-			.attr("href", arr4.links[rank - 1].url2)
-			.text("more"); 
-	}
-	</script>
-   
-	<div id="aboutBox" style="position:absolute;left:40px;top:500px">
-		<h3 style="margin-bottom:-20px;">About this program</h3>
-		<p> 
-		   This Program is based on data taken from 
-		   <a href="http://www.forbes.com/sites/zackomalleygreenburg/2013/11/19/the-worlds-highest-paid-musicians-2013/">Forbes.com</a> and<br />
-		   <a href="http://top50songs.org">Top50Songs.org</a> that shows the Top Paid Music Artists of<br />
-		   the World in 2013 and some of their Top Songs. The <br />
-		   do-nut chart reflects the top 5 ranked and the list <br />
-		   to the right shows 6th place to 25th place. Click on <br />
-		   an artist to see their top songs and links to <br />
-		   their pages at forbes.com and top50songs.org.<br />
-		   Implemented using the JavaScript D3 library as <br />
-		   well as XHTML, & CSS. <br />
-		</p> 
-	</div> 
-	<div id="footer" style="position:absolute;top:1200px;left:175px;">
-		<p>William Olson | willko747@yahoo.com | 1/10/2014</p>
-	</div>
+      .data(arr2.others)
+      .enter().append("rect")
+        .attr("width", 250)
+        .attr("height", 5)
+        .attr("class", "backBars")
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+          return i * 50 + 50;
+        })
+        .attr("fill", "black");
+    var frontBars = canvas2.append("g").attr("class", "frontBars");
+    frontBars.selectAll("rect")
+      .data(arr2.others)
+      .enter().append("rect")
+        .attr("width", 0)
+        .attr("height", 5)
+        .attr("class", "frontBars")
+        .attr("x", 0)
+        .attr("y", function(d, i) {
+          return i * 50 + 50;
+        })
+        .attr("fill", "white");
+
+    //add cool little animation to frontBars			
+    frontBars.selectAll("rect").transition()
+      .duration(2000)
+      .attr("width", function(d) {
+        return d.income / 125 * 400;
+      });
+
+    // showSongs: takes in an artists' name (string),
+    // and rank (int) & displays their songs			
+    function showSongs(name, rank) {
+      if (rank <= 5) {
+        d3.select(".songs")
+          .transition()
+          .duration(500)
+          .style("top", "100px");
+      } else {
+        var offset = 100 + (rank - 6) * 50;
+        d3.select(".songs")
+          .transition()
+          .duration(500)
+          .style("top", "" + offset + "px");
+      }
+      songsBox.text("Top Songs by ")
+        .append("a")
+          .attr("href", arr4.links[rank - 1].url1)
+          .style("color", regTextColor)
+          .text(name);
+      songsBox.selectAll("ul").remove();
+      songsBox.selectAll("li").remove();
+      var hits = songsBox.append("ul")
+        .style("margin-left", "-10px")
+        .style("margin-top", "0px");
+      for (var song = 1; song <= 3; song++) {
+        hits.append("li")
+          .style("font-style", "italic")
+          .style("font-size", "18px")
+          .style("color", clickTextColor)
+          .text(function(d) {
+            switch (song) {
+              case 1:
+                return arr3.topSongs[rank - 1].song1;
+              case 2:
+                return arr3.topSongs[rank - 1].song2;
+              default:
+                return arr3.topSongs[rank - 1].song3;
+            }
+          });
+      }
+      hits.append("li")
+        .style("font-style", "italic")
+        .style("color", clickTextColor)
+        .append("a")
+          .style("color", clickTextColor)
+          .attr("href", arr4.links[rank - 1].url2)
+          .text("more");
+    }
+  </script>
+
+  <div id="aboutBox" style="position:absolute;left:40px;top:500px">
+    <h3 style="margin-bottom:-20px;">About this program</h3>
+    <p>
+      This Program is based on data taken from
+      <a href="http://www.forbes.com/sites/zackomalleygreenburg/2013/11/19/the-worlds-highest-paid-musicians-2013/">Forbes.com</a> and
+      <br />
+      <a href="http://top50songs.org">Top50Songs.org</a> that shows the Top Paid Music Artists of
+      <br /> the World in 2013 and some of their Top Songs. The
+      <br /> do-nut chart reflects the top 5 ranked and the list
+      <br /> to the right shows 6th place to 25th place. Click on
+      <br /> an artist to see their top songs and links to
+      <br /> their pages at forbes.com and top50songs.org.
+      <br /> Implemented using the JavaScript D3 library as
+      <br /> well as XHTML, &amp; CSS.
+      <br />
+    </p>
+  </div>
+  <div id="footer" style="position:absolute;top:1200px;left:175px;">
+    <p>William Olson | willko747@yahoo.com | 1/10/2014</p>
+  </div>
 
 </body>
 
